@@ -160,7 +160,7 @@ mongoimport --db flashcard_db --collection history    --file db_export/history.j
 
 | Name | Student ID |
 |------|-----------|
-| Arsh Mansuri | 25522436 |
+| Arsh Ashfaqhusein Mansuri | 25522436 |
 
 This is an individual project; the entire stack (backend API & auth, database
 model, React frontend, integration, and documentation) was implemented by the
