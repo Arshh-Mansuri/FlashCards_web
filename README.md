@@ -154,16 +154,15 @@ mongoimport --db flashcard_db --collection history    --file db_export/history.j
 
 ---
 
-## Workload Allocation
+## Author & Workload
 
-> **Group members — please complete this table before submission.** The repo
-> shows per-file commit history; this is the summary the rubric asks for.
+**Solo submission** — all files written by:
 
-| Member | Files written | Area |
-|--------|--------------|------|
-| _Member 1 (repo owner)_ | `backend/auth.py`, `backend/main.py`, `backend/models.py`, `backend/database.py`, `backend/seed.py` | Backend API, auth & data model |
-| _Member 2_ | `frontend/src/App.jsx`, `frontend/src/components/*`, `frontend/src/App.css` | Frontend UI & study flow |
-| _Member 3_ | `frontend/src/api/*`, `frontend/src/context/*`, README, DB export | Frontend↔API integration & docs |
+| Name | Student ID |
+|------|-----------|
+| Arsh Mansuri | 25522436 |
 
-Work is split so no single member owns the whole stack: backend, UI, and
-integration/docs are separate ownership areas with overlapping review.
+This is an individual project; the entire stack (backend API & auth, database
+model, React frontend, integration, and documentation) was implemented by the
+sole author. Per-file authorship is also traceable through the repository's
+commit history.
