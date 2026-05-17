@@ -1,0 +1,10 @@
+[
+  { "question": "What is the capital of Australia?", "answer": "Canberra", "deck": "Geography" },
+  { "question": "What does HTTP stand for?", "answer": "HyperText Transfer Protocol", "deck": "Computing" },
+  { "question": "What is the powerhouse of the cell?", "answer": "The mitochondria", "deck": "Biology" },
+  { "question": "What is the derivative of sin(x)?", "answer": "cos(x)", "deck": "Maths" },
+  { "question": "Who wrote Romeo and Juliet?", "answer": "William Shakespeare", "deck": "Literature" },
+  { "question": "What is Newton's second law of motion?", "answer": "F = ma (Force equals mass times acceleration)", "deck": "Physics" },
+  { "question": "What language is the FastAPI framework written in?", "answer": "Python", "deck": "Computing" },
+  { "question": "What is the chemical symbol for gold?", "answer": "Au", "deck": "Chemistry" }
+]
