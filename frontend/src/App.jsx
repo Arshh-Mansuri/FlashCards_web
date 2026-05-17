@@ -4,6 +4,7 @@ import CardModal from "./components/CardModal";
 import SearchBar from "./components/SearchBar";
 import AuthPage from "./components/AuthPage";
 import AdminPanel from "./components/AdminPanel";
+import StatsPanel from "./components/StatsPanel";
 import { useAuth } from "./context/auth-context";
 import {
   createFlashcard,
@@ -111,6 +112,12 @@ export default function App() {
         <div className="header-inner">
           <h1 className="logo">Flashcards</h1>
           <div className="header-actions">
+            <button
+              className="btn secondary"
+              onClick={() => setView(view === "stats" ? "study" : "stats")}
+            >
+              {view === "stats" ? "← Back to study" : "My Stats"}
+            </button>
             {user.role === "admin" && (
               <button
                 className="btn secondary"
@@ -145,6 +152,8 @@ export default function App() {
 
         {view === "admin" ? (
           <AdminPanel />
+        ) : view === "stats" ? (
+          <StatsPanel />
         ) : (
           <>
             <SearchBar value={search} onChange={setSearch} />

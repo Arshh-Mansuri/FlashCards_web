@@ -71,6 +71,22 @@ class AdminHistoryResponse(HistoryResponse):
     username: str
 
 
+class DeckStat(BaseModel):
+    deck: str
+    known: int
+    unknown: int
+    total: int
+    accuracy: float  # percentage of reviews graded "known"
+
+
+class StatsResponse(BaseModel):
+    total: int
+    known: int
+    unknown: int
+    accuracy: float
+    by_deck: List[DeckStat]
+
+
 class AdminUserSummary(BaseModel):
     id: str
     username: str

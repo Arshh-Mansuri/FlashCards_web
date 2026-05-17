@@ -27,11 +27,13 @@ from database import (
 from models import (
     AdminHistoryResponse,
     AdminUserSummary,
+    DeckStat,
     FlashcardCreate,
     FlashcardResponse,
     FlashcardUpdate,
     HistoryCreate,
     HistoryResponse,
+    StatsResponse,
     Token,
     UserCreate,
     UserLogin,
@@ -200,6 +202,57 @@ async def my_history(user: dict = Depends(get_current_user)):
 @app.delete("/history", status_code=204)
 async def clear_my_history(user: dict = Depends(get_current_user)):
     await history_collection.delete_many({"user_id": user["_id"]})
+
+
+def _accuracy(known: int, total: int) -> float:
+    return round(known / total * 100, 1) if total else 0.0
+
+
+@app.get("/history/stats", response_model=StatsResponse)
+async def my_stats(user: dict = Depends(get_current_user)):
+    """Aggregate the user's reviews into known/forgot totals and a per-deck
+    breakdown so they can track their own progress."""
+    pipeline = [
+        {"$match": {"user_id": user["_id"]}},
+        {
+            "$group": {
+                "_id": {"deck": "$deck", "result": "$result"},
+                "count": {"$sum": 1},
+            }
+        },
+    ]
+
+    decks: dict = {}  # deck -> {"known": int, "unknown": int}
+    async for row in history_collection.aggregate(pipeline):
+        deck = row["_id"]["deck"]
+        result = row["_id"]["result"]
+        decks.setdefault(deck, {"known": 0, "unknown": 0})[result] = row["count"]
+
+    by_deck = []
+    total_known = total_unknown = 0
+    for deck, counts in sorted(decks.items()):
+        known, unknown = counts["known"], counts["unknown"]
+        total = known + unknown
+        total_known += known
+        total_unknown += unknown
+        by_deck.append(
+            DeckStat(
+                deck=deck,
+                known=known,
+                unknown=unknown,
+                total=total,
+                accuracy=_accuracy(known, total),
+            )
+        )
+
+    grand_total = total_known + total_unknown
+    return StatsResponse(
+        total=grand_total,
+        known=total_known,
+        unknown=total_unknown,
+        accuracy=_accuracy(total_known, grand_total),
+        by_deck=by_deck,
+    )
 
 
 # --- Admin: view every user's learning history ------------------------------

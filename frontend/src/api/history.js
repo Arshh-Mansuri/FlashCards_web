@@ -6,6 +6,8 @@ export const recordHistory = (cardId, result) =>
 
 export const getMyHistory = () => api("/history");
 
+export const getMyStats = () => api("/history/stats");
+
 export const clearMyHistory = () => api("/history", { method: "DELETE" });
 
 // Admin-only: every user's history
