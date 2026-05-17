@@ -43,13 +43,22 @@ export default function App() {
     };
   }, [user]);
 
-  const decks = ["All", ...new Set(cards.map((c) => c.deck))];
+  // Deck names are case-insensitive: group by lower-cased name, keep the
+  // first-seen spelling as the tab label.
+  const deckLabels = new Map();
+  for (const c of cards) {
+    const key = c.deck.toLowerCase();
+    if (!deckLabels.has(key)) deckLabels.set(key, c.deck);
+  }
+  const decks = ["All", ...deckLabels.values()];
 
   // Live search + deck filter, recomputed on every keystroke.
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const deckKey = deckFilter.toLowerCase();
     return cards.filter((c) => {
-      const inDeck = deckFilter === "All" || c.deck === deckFilter;
+      const inDeck =
+        deckFilter === "All" || c.deck.toLowerCase() === deckKey;
       if (!inDeck) return false;
       if (!q) return true;
       return (
@@ -164,7 +173,9 @@ export default function App() {
                   const count =
                     d === "All"
                       ? cards.length
-                      : cards.filter((c) => c.deck === d).length;
+                      : cards.filter(
+                          (c) => c.deck.toLowerCase() === d.toLowerCase()
+                        ).length;
                   return (
                     <button
                       key={d}

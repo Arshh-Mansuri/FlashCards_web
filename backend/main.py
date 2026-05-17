@@ -5,6 +5,7 @@ Three conceptual entities, each with full CRUD-style operations:
   * flashcards — per-user study cards (create / read / update / delete)
   * history    — per-user learning history; admins can read every user's history
 """
+import re
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -123,12 +124,30 @@ async def list_flashcards(user: dict = Depends(get_current_user)):
     return cards
 
 
+async def _canonical_deck(owner_id, deck: Optional[str], exclude_id=None) -> str:
+    """Normalise a deck name so it is treated case-insensitively.
+
+    A user's decks are matched ignoring case: if the user already has a deck
+    with the same name in any casing (e.g. "General"), reuse that exact
+    spelling instead of creating a separate "general" deck.
+    """
+    name = (deck or "").strip() or "General"
+    query = {
+        "owner_id": owner_id,
+        "deck": {"$regex": f"^{re.escape(name)}$", "$options": "i"},
+    }
+    if exclude_id is not None:
+        query["_id"] = {"$ne": exclude_id}
+    existing = await flashcards_collection.find_one(query)
+    return existing["deck"] if existing else name
+
+
 @app.post("/flashcards", response_model=FlashcardResponse, status_code=201)
 async def create_flashcard(
     card: FlashcardCreate, user: dict = Depends(get_current_user)
 ):
     data = card.model_dump()
-    data["deck"] = data.get("deck") or "General"
+    data["deck"] = await _canonical_deck(user["_id"], data.get("deck"))
     data["owner_id"] = user["_id"]
     data["created_at"] = datetime.now(timezone.utc)
     result = await flashcards_collection.insert_one(data)
@@ -155,6 +174,10 @@ async def update_flashcard(
     update_data = {k: v for k, v in card.model_dump().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
+    if "deck" in update_data:
+        update_data["deck"] = await _canonical_deck(
+            user["_id"], update_data["deck"], exclude_id=ObjectId(card_id)
+        )
     await flashcards_collection.update_one(
         {"_id": ObjectId(card_id)}, {"$set": update_data}
     )
@@ -212,19 +235,22 @@ def _accuracy(known: int, total: int) -> float:
 async def my_stats(user: dict = Depends(get_current_user)):
     """Aggregate the user's reviews into known/forgot totals and a per-deck
     breakdown so they can track their own progress."""
+    # Group by a lower-cased deck key so "General" and "general" are one deck,
+    # keeping the first-seen spelling as the display label.
     pipeline = [
         {"$match": {"user_id": user["_id"]}},
         {
             "$group": {
-                "_id": {"deck": "$deck", "result": "$result"},
+                "_id": {"deck": {"$toLower": "$deck"}, "result": "$result"},
                 "count": {"$sum": 1},
+                "label": {"$first": "$deck"},
             }
         },
     ]
 
-    decks: dict = {}  # deck -> {"known": int, "unknown": int}
+    decks: dict = {}  # deck label -> {"known": int, "unknown": int}
     async for row in history_collection.aggregate(pipeline):
-        deck = row["_id"]["deck"]
+        deck = row["label"]
         result = row["_id"]["result"]
         decks.setdefault(deck, {"known": 0, "unknown": 0})[result] = row["count"]
 
