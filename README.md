@@ -156,13 +156,27 @@ mongoimport --db flashcard_db --collection history    --file db_export/history.j
 
 ## Author & Workload
 
-**Solo submission** — all files written by:
+**Solo submission.** This is an individual project — there are no other group
+members. The entire stack (backend API & auth, database model, React frontend,
+integration, and documentation) was designed and implemented by the sole author
+below, and every file is attributable to them.
 
-| Name | Student ID |
-|------|-----------|
-| Arsh Ashfaqhusein Mansuri | 25522436 |
+| Name | Student ID | Role |
+|------|-----------|------|
+| Arsh Ashfaqhusein Mansuri | 25522436 | Sole author — 100% of all work |
 
-This is an individual project; the entire stack (backend API & auth, database
-model, React frontend, integration, and documentation) was implemented by the
-sole author. Per-file authorship is also traceable through the repository's
-commit history.
+### Per-file authorship
+
+All files were written solely by **Arsh Ashfaqhusein Mansuri (25522436)**:
+
+| Area | Files |
+|------|-------|
+| Backend (FastAPI) | `backend/main.py`, `backend/auth.py`, `backend/models.py`, `backend/database.py`, `backend/seed.py`, `backend/requirements.txt`, `backend/.env.example` |
+| Frontend (React) | `frontend/src/App.jsx`, `frontend/src/main.jsx`, `frontend/src/App.css`, `frontend/src/index.css` |
+| Frontend — API layer | `frontend/src/api/client.js`, `auth.js`, `flashcards.js`, `history.js` |
+| Frontend — context | `frontend/src/context/AuthContext.jsx`, `frontend/src/context/auth-context.js` |
+| Frontend — components | `frontend/src/components/AuthPage.jsx`, `SearchBar.jsx`, `Flashcard.jsx`, `CardModal.jsx`, `AdminPanel.jsx`, `StatsPanel.jsx` |
+| Data & docs | `README.md`, `flashcards.json`, `db_export/*.json` |
+
+Per-file authorship is additionally traceable through the repository's commit
+history (all commits authored by Arsh Ashfaqhusein Mansuri).
